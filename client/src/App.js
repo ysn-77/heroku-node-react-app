@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-
 import logo from './logo.svg';
-
 import './App.css';
 
 class App extends Component {
@@ -28,7 +26,7 @@ class App extends Component {
 
   handleSubmit = async e => {
     e.preventDefault();
-    const response = await fetch('/api/world', {
+    const response = await fetch('/api/za_warudo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

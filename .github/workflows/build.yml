@@ -1,0 +1,28 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: "Setup Node"
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      # comes installed by default
+      # - name: install yarn
+      #   run: npm install -g yarn
+
+      - name: install dependencies backend
+        run: yarn
+
+      - name: install dependencies frontend
+        run: cd client && yarn && cd ..

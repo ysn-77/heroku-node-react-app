@@ -5,20 +5,24 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5000;
 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 // API calls
 app.get('/api/hello', (req, res) => {
   res.send({ express: 'Hello From Express' });
 });
 
-app.post('/api/world', (req, res) => {
+
+app.post('/api/za_warudo', (req, res) => {
   console.log(req.body);
   res.send(
-    `I received your POST request. This is what you sent me: ${req.body.post}`,
+    `POST request received: ${req.body.post}`,
   );
 });
+
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
@@ -29,5 +33,6 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 }
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
