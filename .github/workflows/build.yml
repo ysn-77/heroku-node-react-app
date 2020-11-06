@@ -7,6 +7,9 @@ on:
       - 'releases/**'
       - 'hotfix/**'
 
+env:
+  PROJECT: ${{ secrets.PROJECT }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,9 +36,11 @@ jobs:
             ${{ runner.os }}-build-
 
       - name: install dependencies backend
-        if: ${{ contains( ['both', 'backend'], secrets.PROJECT) }}
+        #if: ${{ contains( ['both', 'backend'], secrets.PROJECT) }}
+        if: env.PROJECT == 'both' || env.PROJECT == 'backend'
         run: yarn
 
       - name: install dependencies frontend
-        if: ${{ contains( ['both', 'frontend'], secrets.PROJECT) }}
+        #if: ${{ contains( ['both', 'frontend'], secrets.PROJECT) }}
+        if: env.PROJECT == 'both' || env.PROJECT == 'frontend'
         run: cd client && yarn && cd ..
