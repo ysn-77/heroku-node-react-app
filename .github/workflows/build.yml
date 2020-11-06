@@ -1,9 +1,11 @@
-name: build
+name: build, test and deploy
 
 on:
   push:
     branches:
-      - master
+      - 'master'
+      - 'releases/**'
+      - 'hotfix/**'
 
 jobs:
   build:
@@ -22,15 +24,18 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          #caching node_modules folder
+          # caching all node_modules folder throughout repository
           path: '**/node_modules'
+          # hashes all yarn.lock files to generate key
           key: ${{ runner.os }}-build-${{ env.cache-name }}-modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
 
       - name: install dependencies backend
+        if: ${{ contains( ['both', 'backend'], secrets.PROJECT) }}
         run: yarn
 
       - name: install dependencies frontend
+        if: ${{ contains( ['both', 'frontend'], secrets.PROJECT) }}
         run: cd client && yarn && cd ..
