@@ -12,12 +12,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // API calls
 app.get('/api/hello', (req, res) => {
-  res.send({ express: 'Hello From Express' });
+  res.send({ express: 'Hello from Express and Heroku' });
 });
 
 
 app.post('/api/za_warudo', (req, res) => {
-  console.log(req.body);
   res.send(
     `POST request received: ${req.body.post}`,
   );

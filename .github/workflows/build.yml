@@ -9,6 +9,7 @@ on:
 
 env:
   PROJECT: ${{ secrets.PROJECT }}
+  DO_DEPLOY: ${{ secrets.DO_DEPLOY == 'true' }}
 
 jobs:
   build:
@@ -27,7 +28,7 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          # caching all node_modules folder throughout repository
+          # caching all node_modules folder throughout repository to reduce job time
           path: '**/node_modules'
           # hashes all yarn.lock files to generate key
           key: ${{ runner.os }}-build-${{ env.cache-name }}-modules-${{ hashFiles('**/yarn.lock') }}
@@ -35,12 +36,36 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
 
-      - name: install dependencies backend
-        #if: ${{ contains( ['both', 'backend'], secrets.PROJECT) }}
+      - name: Install dependencies backend
+        # array literals don't exist in github actions yet, hence this doesn't work
+        #if: contains( ['both', 'backend'], env.PROJECT)
         if: env.PROJECT == 'both' || env.PROJECT == 'backend'
         run: yarn
 
-      - name: install dependencies frontend
-        #if: ${{ contains( ['both', 'frontend'], secrets.PROJECT) }}
+      - name: Install dependencies frontend
+        #if: contains( ['both', 'frontend'], env.PROJECT)
         if: env.PROJECT == 'both' || env.PROJECT == 'frontend'
         run: cd client && yarn && cd ..
+
+  deploy:
+    name: Deploy to Heroku
+    # Sadly github actions does not expose secrets or env in job's if
+    # moved the if to all steps if instead
+    #if: ${{ secrets.DO_DEPLOY == 'true' }}
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      # HEROKU_API_KEY variable is auto detected by Heroku cli when using cli commands
+      HEROKU_API_KEY: ${{ secrets.HEROKU_KEY }}
+      HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+    steps:
+      - name: Checkout code
+        if: env.DO_DEPLOY
+        uses: actions/checkout@v2
+
+      - name: Deploy to Heroku
+        if: env.DO_DEPLOY
+        uses: akhileshns/heroku-deploy@v3.6.8
+        with:
+          heroku_api_key: ${{ env.HEROKU_API_KEY}}
+          heroku_app_name: ${{ env.HEROKU_APP_NAME}}
