@@ -17,9 +17,17 @@ jobs:
         with:
           node-version: 12.x
 
-      # comes installed by default
-      # - name: install yarn
-      #   run: npm install -g yarn
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          #caching node_modules folder
+          path: '**/node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-modules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
 
       - name: install dependencies backend
         run: yarn
