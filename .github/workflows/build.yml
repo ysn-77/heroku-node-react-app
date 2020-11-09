@@ -50,7 +50,7 @@ jobs:
   deploy:
     name: Deploy to Heroku
     # Sadly github actions does not expose secrets or env in job's if
-    # moved the if to all steps if instead
+    # moved the if to all steps' if instead
     #if: ${{ secrets.DO_DEPLOY == 'true' }}
     needs: build
     runs-on: ubuntu-latest
@@ -63,9 +63,14 @@ jobs:
         if: env.DO_DEPLOY
         uses: actions/checkout@v2
 
-      - name: Deploy to Heroku
+      - name: Login to Heroku Container registry
         if: env.DO_DEPLOY
-        uses: akhileshns/heroku-deploy@v3.6.8
-        with:
-          heroku_api_key: ${{ env.HEROKU_API_KEY}}
-          heroku_app_name: ${{ env.HEROKU_APP_NAME}}
+        run: heroku container:login
+
+      - name: Push to Heroku container registry
+        if: env.DO_DEPLOY
+        run: heroku container:push -a ${{ env.HEROKU_APP_NAME }} web
+
+      - name: Deploy container to Heroku
+        if: env.DO_DEPLOY
+        run: heroku container:release -a ${{ env.HEROKU_APP_NAME }} web

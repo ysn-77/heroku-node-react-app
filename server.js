@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // API calls
 app.get('/api/hello', (req, res) => {
-  res.send({ express: 'Hello from Express and Heroku' });
+  res.send({ express: 'Hello from Express and Heroku docker' });
 });
 
 
